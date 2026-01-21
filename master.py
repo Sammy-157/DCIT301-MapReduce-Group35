@@ -10,7 +10,7 @@ app = Flask(__name__)
 job_data = {
     "status": "Waiting for Workers...",
     "raw_results": [],
-    "final_counts": []
+    "final_counts": {} # Changed to dict for easier UI reading
 }
 tasks = []
 
@@ -20,11 +20,12 @@ def run_socket_server():
         with open("input.txt", "r") as f:
             tasks = f.readlines()
     except FileNotFoundError:
-        tasks = ["Default line: Hello world", "Operating Systems project"]
+        tasks = ["Default line: Hello world", "Group 35 MapReduce Project"]
 
     server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     server.bind(('localhost', 6000))
-    server.listen(5)
+    server.listen(10)
 
     while tasks:
         conn, addr = server.accept()
@@ -32,34 +33,39 @@ def run_socket_server():
         conn.send(task.encode())
         
         data = conn.recv(1024).decode()
-        job_data["raw_results"].append(data)
+        if data:
+            job_data["raw_results"].append(data)
         conn.close()
 
     # --- Reduce Phase ---
     job_data["status"] = "Map Complete. Reducing..."
     grouped = defaultdict(list)
     for res_str in job_data["raw_results"]:
-        pairs = eval(res_str)
-        for word, count in pairs:
-            grouped[word].append(count)
+        try:
+            pairs = eval(res_str)
+            for word, count in pairs:
+                grouped[word].append(count)
+        except:
+            continue
 
-    job_data["final_counts"] = [reducer(word, counts) for word, counts in grouped.items()]
+    # Convert results to a dictionary for the frontend
+    reduced_data = {}
+    for word, counts in grouped.items():
+        reduced_data[word] = sum(counts) # Simple reduction
+    
+    job_data["final_counts"] = reduced_data
     job_data["status"] = "Finished"
 
-# Web Routes
 @app.route('/')
 def index():
     return render_template('index.html')
 
-@app.route('/api/data')
-def get_data():
-    return jsonify(job_data)
+@app.route('/results')
+def get_results():
+    # Return the dictionary directly to fix the 404/Mapping error
+    return jsonify(job_data["final_counts"])
 
 if __name__ == "__main__":
-    # 1. Start the Socket Server (for Workers) in a background thread
     socket_thread = threading.Thread(target=run_socket_server, daemon=True)
     socket_thread.start()
-    
-    # 2. Start the Flask Website (for you) on the main thread
-    # Note: use_reloader=False is IMPORTANT when using threads!
     app.run(debug=True, port=5000, use_reloader=False)
