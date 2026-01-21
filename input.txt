@@ -1,0 +1,10 @@
+An operating system is the most important software that runs on a computer.
+The operating system manages the computer memory and processes.
+An operating system allows you to communicate with the computer without knowing the computer language.
+Distributed systems use an operating system to manage multiple computers.
+In a distributed system the master node is the brain of the system.
+The master node assigns tasks to worker nodes in the system.
+The worker nodes perform map and reduce tasks for the system.
+A mapreduce framework is a powerful tool for an operating system.
+Group 35 is demonstrating a mapreduce framework for an operating system.
+The goal of Group 35 is to show how an operating system handles distributed tasks
