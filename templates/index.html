@@ -1,53 +1,94 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
+  <head>
+    <meta charset="UTF-8" />
     <title>Group 35 MapReduce</title>
     <style>
-        body { font-family: sans-serif; background: #f0f2f5; margin: 0; text-align: center; }
-        .hero { background: #1a73e8; color: white; padding: 20px; }
-        .stats-bar { display: flex; justify-content: center; gap: 20px; padding: 20px; }
-        .card { background: white; padding: 20px; border-radius: 8px; width: 150px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        .count { font-size: 24px; font-weight: bold; color: #1a73e8; }
-        .word-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; padding: 20px; }
-        .word-card { background: white; padding: 10px; border-radius: 5px; border-left: 4px solid #1a73e8; }
+      body {
+        font-family: sans-serif;
+        background: #f0f2f5;
+        margin: 0;
+        text-align: center;
+      }
+      .hero {
+        background: #1a73e8;
+        color: white;
+        padding: 20px;
+      }
+      .stats-bar {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+        padding: 20px;
+      }
+      .card {
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        width: 150px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      }
+      .count {
+        font-size: 24px;
+        font-weight: bold;
+        color: #1a73e8;
+      }
+      .word-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 10px;
+        padding: 20px;
+      }
+      .word-card {
+        background: white;
+        padding: 10px;
+        border-radius: 5px;
+        border-left: 4px solid #1a73e8;
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <div class="hero">
-        <h1>DCIT 301-OPERATING SYSTEMS - Group 35(MAP REDUCE FRAMEWORK)</h1>
-        <p>Status: <span id="status-text">Ready</span></p>
+      <h1>DCIT 301-OPERATING SYSTEMS - Group 35(MAP REDUCE FRAMEWORK)</h1>
+      <p>Status: <span id="status-text">Ready</span></p>
     </div>
 
     <div class="stats-bar">
-        <div class="card"><div id="total-words" class="count">0</div>Unique Words</div>
-        <div class="card"><div id="total-tasks" class="count">0</div>Tasks Completed</div>
+      <div class="card">
+        <div id="total-words" class="count">0</div>
+        Unique Words
+      </div>
+      <div class="card">
+        <div id="total-tasks" class="count">0</div>
+        Tasks Completed
+      </div>
     </div>
 
     <div id="results" class="word-grid"></div>
 
     <script>
-        function update() {
-            fetch('/results')
-                .then(res => res.json())
-                .then(data => {
-                    // Update the counters
-                    document.getElementById('total-tasks').innerText = data.completed_count;
-                    document.getElementById('status-text').innerText = data.status;
-                    
-                    const container = document.getElementById('results');
-                    container.innerHTML = '';
-                    let count = 0;
-                    
-                    // Show the words
-                    Object.entries(data.words).forEach(([word, val]) => {
-                        count++;
-                        container.innerHTML += `<div class="word-card"><b>${word}</b><br>${val}</div>`;
-                    });
-                    document.getElementById('total-words').innerText = count;
-                });
-        }
-        setInterval(update, 1000); // Check for new data every second
+      function update() {
+        fetch("/results")
+          .then((res) => res.json())
+          .then((data) => {
+            // Update the counters
+            document.getElementById("total-tasks").innerText =
+              data.completed_count;
+            document.getElementById("status-text").innerText = data.status;
+
+            const container = document.getElementById("results");
+            container.innerHTML = "";
+            let count = 0;
+
+            // Show the words
+            Object.entries(data.words).forEach(([word, val]) => {
+              count++;
+              container.innerHTML += `<div class="word-card"><b>${word}</b><br>${val}</div>`;
+            });
+            document.getElementById("total-words").innerText = count;
+          });
+      }
+      setInterval(update, 1000); // Check for new data every second
     </script>
-</body>
+  </body>
 </html>
